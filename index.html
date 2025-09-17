@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato Order Processor</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .order-id { font-weight: bold; }
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: white;
+        }
+        .status-new { background-color: #f0ad4e; }
+        .status-accepted { background-color: #5cb85c; }
+        .status-rejected { background-color: #d9534f; }
+        .order-details {
+            margin-top: 10px;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .btn-accept { background-color: #5cb85c; }
+        .btn-reject { background-color: #d9534f; }
+    </style>
+</head>
+<body>
+
+    <h1>Restaurant Order Dashboard</h1>
+
+    <div id="order-list">
+        <!-- Order cards will be dynamically added here by JavaScript -->
+    </div>
+
+    <script>
+        // Sample data for demonstration
+        const sampleOrders = [
+            {
+                id: 'ORD-1001',
+                customer: 'Jane Doe',
+                items: [{ name: 'Chicken Biryani', quantity: 2 }, { name: 'Garlic Naan', quantity: 1 }],
+                total: 550,
+                status: 'New'
+            },
+            {
+                id: 'ORD-1002',
+                customer: 'John Smith',
+                items: [{ name: 'Paneer Butter Masala', quantity: 1 }],
+                total: 300,
+                status: 'New'
+            }
+        ];
+
+        const orderList = document.getElementById('order-list');
+
+        function renderOrders() {
+            orderList.innerHTML = ''; // Clear existing orders
+            sampleOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+
+                let statusClass = '';
+                if (order.status === 'New') {
+                    statusClass = 'status-new';
+                } else if (order.status === 'Accepted') {
+                    statusClass = 'status-accepted';
+                } else if (order.status === 'Rejected') {
+                    statusClass = 'status-rejected';
+                }
+
+                const itemDetails = order.items.map(item =>
+                    `<div class="order-item"><span>${item.quantity}x ${item.name}</span></div>`
+                ).join('');
+
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-id">Order ID: ${order.id}</div>
+                        <span class="order-status ${statusClass}">${order.status}</span>
+                    </div>
+                    <div class="order-details">
+                        <p><strong>Customer:</strong> ${order.customer}</p>
+                        ${itemDetails}
+                        <p><strong>Total:</strong> ₹${order.total}</p>
+                    </div>
+                    ${order.status === 'New' ? `
+                    <div class="actions">
+                        <button class="btn btn-reject" onclick="processOrder('${order.id}', 'Rejected')">Reject</button>
+                        <button class="btn btn-accept" onclick="processOrder('${order.id}', 'Accepted')">Accept</button>
+                    </div>` : ''}
+                `;
+                orderList.appendChild(orderCard);
+            });
+        }
+
+        function processOrder(orderId, newStatus) {
+            const orderIndex = sampleOrders.findIndex(order => order.id === orderId);
+            if (orderIndex > -1) {
+                sampleOrders[orderIndex].status = newStatus;
+                renderOrders(); // Re-render the orders to update the status and buttons
+                console.log(`Order ${orderId} has been ${newStatus}.`);
+            }
+        }
+
+        // Initial render
+        renderOrders();
+    </script>
+
+</body>
+</html>
